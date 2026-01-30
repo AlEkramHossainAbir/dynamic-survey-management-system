@@ -1,14 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { findUserByEmail } = require("../models/userModel");
 const { comparePassword } = require("../utils/hash");
-const { convertBigIntToString } = require('../utils/helper');
 
 require("dotenv").config();
 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
 
     const user = await findUserByEmail(email);
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
