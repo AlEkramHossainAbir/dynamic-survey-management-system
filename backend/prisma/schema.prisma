@@ -9,8 +9,8 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model field_options {
-  id            BigInt         @id @default(autoincrement())
-  field_id      BigInt?
+  id            Int            @id @default(autoincrement())
+  field_id      Int?
   label         String         @db.VarChar(100)
   value         String         @db.VarChar(100)
   created_at    DateTime?      @default(now()) @db.Timestamptz(6)
@@ -19,9 +19,9 @@ model field_options {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model submission_answers {
-  id            BigInt         @id @default(autoincrement())
-  submission_id BigInt?
-  field_id      BigInt?
+  id            Int            @id @default(autoincrement())
+  submission_id Int?
+  field_id      Int?
   value         String
   survey_fields survey_fields? @relation(fields: [field_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   submissions   submissions?   @relation(fields: [submission_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -29,9 +29,9 @@ model submission_answers {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model submissions {
-  id                 BigInt               @id @default(autoincrement())
-  survey_id          BigInt?
-  user_id            BigInt?
+  id                 Int                  @id @default(autoincrement())
+  survey_id          Int?
+  user_id            Int?
   submitted_at       DateTime?            @default(now()) @db.Timestamptz(6)
   submission_answers submission_answers[]
   surveys            surveys?             @relation(fields: [survey_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -40,8 +40,8 @@ model submissions {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model survey_fields {
-  id                 BigInt               @id @default(autoincrement())
-  survey_id          BigInt?
+  id                 Int                  @id @default(autoincrement())
+  survey_id          Int?
   label              String               @db.VarChar(150)
   field_type         String               @db.VarChar(50)
   is_required        Boolean?             @default(false)
@@ -55,10 +55,10 @@ model survey_fields {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model surveys {
-  id            BigInt          @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   title         String          @db.VarChar(200)
   description   String?
-  created_by    BigInt?
+  created_by    Int?
   created_at    DateTime?       @default(now()) @db.Timestamptz(6)
   updated_at    DateTime?       @default(now()) @db.Timestamptz(6)
   submissions   submissions[]
@@ -68,14 +68,14 @@ model surveys {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
-  id            BigInt        @id @default(autoincrement())
-  created_at    DateTime?     @default(now()) @db.Timestamptz(6)
-  name          String        @db.VarChar(100)
-  email         String        @unique @db.VarChar(150)
-  role          String        @db.VarChar(50)
-  password_hash String        @db.VarChar(255)
-  status        Boolean?      @default(true)
-  updated_at    DateTime?     @default(now()) @db.Timestamptz(6)
-  submissions   submissions[]
-  surveys       surveys[]
+  id          Int           @id
+  created_at  DateTime?     @default(now()) @db.Timestamptz(6)
+  name        String        @db.VarChar(100)
+  email       String        @unique @db.VarChar(150)
+  role        String        @db.VarChar(50)
+  password    String        @db.VarChar(255)
+  status      Boolean?      @default(true)
+  updated_at  DateTime?     @default(now()) @db.Timestamptz(6)
+  submissions submissions[]
+  surveys     surveys[]
 }
