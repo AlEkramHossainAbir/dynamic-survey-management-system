@@ -8,8 +8,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
         <SidebarTrigger />
+      <main className="flex items-center content-center p-4">
         {children}
       </main>
     </SidebarProvider>
