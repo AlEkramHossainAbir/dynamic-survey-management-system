@@ -5,10 +5,9 @@ const {createSurvey, getSurveyById, getSurveys, deleteSurvey, addFieldToSurvey, 
 
 router.post('/',authenticateJWT,authorizeRole(["admin"]), createSurvey);
 router.get('/',authenticateJWT, getSurveys);
-router.get('/:id', getSurveyById);
-router.delete('/:id', deleteSurvey);
-router.post('/:id/fields', addFieldToSurvey);
-router.put('/fields/:id', updateField);
-router.delete('/fields/:id', deleteField);
-
+router.get('/:id',authenticateJWT,authorizeRole(["admin"]), getSurveyById);
+router.delete('/:id',authenticateJWT,authorizeRole(["admin"]), deleteSurvey);
+router.post('/:id/fields',authenticateJWT,authorizeRole(["admin"]), addFieldToSurvey);
+router.put('/fields/:id',authenticateJWT,authorizeRole(["admin"]), updateField);
+router.delete('/fields/:id',authenticateJWT,authorizeRole(["admin"]), deleteField);
 module.exports = router;

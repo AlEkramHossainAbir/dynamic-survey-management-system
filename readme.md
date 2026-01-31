@@ -65,3 +65,5 @@ there will be two type of user (Roles: Admin, Officer)
 
 ## supabase
 cloud-hosted PostgreSQL
+npx prisma db pull
+npx prisma generate
