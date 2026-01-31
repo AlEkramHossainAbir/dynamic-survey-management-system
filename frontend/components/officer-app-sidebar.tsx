@@ -29,17 +29,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 const items = [
   {
     title: "Home",
-    url: "/dashboard",
+    url: "/officer/dashboard",
     icon: Home,
   },
   {
     title: "Surveys",
-    url: "/dashboard/surveys",
+    url: "/officer/dashboard/surveys",
     icon: Inbox,
   },
   {
     title: "Submissions",
-    url: "/dashboard/submissions",
+    url: "/officer/dashboard/submissions",
     icon: Calendar,
   }
 ]
