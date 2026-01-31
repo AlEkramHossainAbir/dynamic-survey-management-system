@@ -21,7 +21,7 @@ export default function SurveyListPage() {
  
 
   const loadSurveys = async () => {
-    const res = await api.get(`/surveys?page=${page}&limit=10`);
+    const res = await api.get(`/admin/surveys?page=${page}&limit=10`);
     setSurveys(res.data.data);
     setTotalPages(res.data.meta.totalPages);
   };

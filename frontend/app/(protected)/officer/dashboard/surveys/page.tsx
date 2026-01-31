@@ -1,91 +1,93 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Radio } from "lucide-react";
 
-export default function SurveyListPage() {
+export default function OfficerSurveys() {
   const [surveys, setSurveys] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [answers, setAnswers] = useState({}); // { fieldId: value }
 
- 
+  const fetchSurveys = async () => {
+    try {
+      const res = await api.get(`/officer/surveys`);
+      setSurveys(res.data.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  const loadSurveys = async () => {
-    const res = await api.get(`/surveys?page=${page}&limit=10`);
-    setSurveys(res.data.data);
-    setTotalPages(res.data.meta.totalPages);
+  useEffect(() => {
+    fetchSurveys();
+  }, []);
+
+  
+
+  const handleChange = (fieldId, value) => {
+    setAnswers(prev => ({ ...prev, [fieldId]: value }));
+  };
+
+  const handleSubmit = async surveyId => {
+    try {
+      const payload = Object.entries(answers).map(([field_id, value]) => ({
+        field_id: parseInt(field_id),
+        value,
+      }));
+
+      await api.post(`/officer/surveys/${surveyId}/submit`, { answers: payload });
+      alert("Survey submitted successfully!");
+      setAnswers({});
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Submission failed");
+    }
   };
   
-   useEffect(() => {
-    loadSurveys();
-  }, [page]);
-
-  const deleteSurvey = async (id: number) => {
-    await api.delete(`/surveys/${id}`);
-    loadSurveys();
-  };
-
   return (
     <div className="p-6 space-y-4">
       <div className="flex justify-between">
-        <h1 className="text-2xl font-bold">Surveys</h1>
-        <Link href="/dashboard/surveys/create">
-          <Button>Create Survey</Button>
-        </Link>
-      </div>
+        <h1 className="text-2xl font-bold">Officer Surveys</h1>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+      {surveys.map(survey => (
+        <div key={survey.id} className="p-4 border rounded-md space-y-4">
+          <h2 className="text-xl font-semibold">{survey.title}</h2>
+          <p>{survey.description}</p>
 
-        <TableBody>
-          {surveys.map((survey: any) => {
-            console.log("Survey Item:", survey);
-            return (
-            <TableRow key={survey.id}>
-              <TableCell>{survey.title}</TableCell>
-              <TableCell>
-                {new Date(survey.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell className="space-x-2">
-                <Link href={`/dashboard/surveys/${survey.id}`}>
-                  <Button variant="outline">View</Button>
-                </Link>
-                <Button
-                  variant="destructive"
-                  onClick={() => deleteSurvey(survey.id)}
+          {survey.survey_fields.map(field => (
+            <div key={field.id} className="space-y-2">
+              <label className="block font-medium">{field.label} {field.is_required && "*"}</label>
+
+              {field.field_type === "text" && (
+                <Input
+                  value={answers[field.id] || ""}
+                  onChange={e => handleChange(field.id, e.target.value)}
+                />
+              )}
+
+              {field.field_type === "radio" && (
+                <RadioGroup
+                  value={answers[field.id] || ""}
+                  onValueChange={value => handleChange(field.id, value)}
+                  className="flex space-x-4"
                 >
-                  Delete
-                </Button>
-              </TableCell>
-            </TableRow>
-          )
-          })}
-        </TableBody>
-      </Table>
+                  {field.field_options.map(option => (
+                    <Radio key={option.id} value={option.value}>
+                      {option.label}
+                    </Radio>
+                  ))}
+                </RadioGroup>
+              )}
+            </div>
+          ))}
 
-      <div className="flex gap-2">
-        <Button disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-          Prev
-        </Button>
-        <Button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-          Next
-        </Button>
+          <Button onClick={() => handleSubmit(survey.id)}>Submit Survey</Button>
+        </div>
+      ))}
       </div>
     </div>
   );
