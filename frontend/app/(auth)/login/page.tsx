@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,16 +15,14 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
+      const res = await api.post("/auth/login", { email, password });
+      const data = await res.data;
 
-      if (res.ok) {
+      if (res.status === 200) {
         localStorage.setItem("token", data.token);
-        router.push("/dashboard");
+        if(data.user.role === "officer") router.push("/officer/dashboard");
+        else if(data.user.role === "admin") router.push("/admin/dashboard");
+        
       } else {
         setError(data.message);
       }
