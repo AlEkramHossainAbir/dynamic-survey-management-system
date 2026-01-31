@@ -4,7 +4,7 @@ const { authenticateJWT, authorizeRole } = require("../middlewares/authMiddlewar
 const {createSurvey, getSurveyById, getSurveys, deleteSurvey, addFieldToSurvey, updateField, deleteField} = require('../controllers/surveyController');
 
 router.post('/',authenticateJWT,authorizeRole(["admin"]), createSurvey);
-router.get('/',authenticateJWT, getSurveys);
+router.get('/',authenticateJWT,authorizeRole(["admin"]), getSurveys);
 router.get('/:id',authenticateJWT,authorizeRole(["admin"]), getSurveyById);
 router.delete('/:id',authenticateJWT,authorizeRole(["admin"]), deleteSurvey);
 router.post('/:id/fields',authenticateJWT,authorizeRole(["admin"]), addFieldToSurvey);

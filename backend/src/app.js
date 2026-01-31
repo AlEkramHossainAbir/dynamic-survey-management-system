@@ -4,6 +4,9 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const showAllUsers = require('./routes/userRoute');
 const surveyRoutes = require('./routes/surveyRoutes');
+const surveySubmissionRoutes = require('./routes/surveySubmission');
+
+
 
 const app = express();
 
@@ -16,7 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 // Health check route
 app.use("/api/auth", authRoutes);
 app.use('/api/users', showAllUsers);
-app.use('/api/surveys', surveyRoutes);
+app.use('/api/admin/surveys', surveyRoutes);
+app.use('/api/officer/surveys', surveySubmissionRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
