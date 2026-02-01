@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface FieldOption {
   label: string;
@@ -48,6 +49,7 @@ interface Survey {
 export default function EditSurveyPage() {
   const params = useParams();
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [survey, setSurvey] = useState<Survey | null>(null);
@@ -78,10 +80,18 @@ export default function EditSurveyPage() {
         title,
         description: description || null,
       });
+      toast({
+        title: "Survey Updated",
+        description: "Your changes have been saved successfully.",
+      });
       router.push("/admin/dashboard/surveys");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to update survey");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.response?.data?.message || "Failed to update survey",
+      });
     } finally {
       setSaving(false);
     }
@@ -94,9 +104,17 @@ export default function EditSurveyPage() {
       // Refresh survey data
       const res = await api.get(`/admin/surveys/${params.id}`);
       setSurvey(res.data);
-    } catch (err) {
+      toast({
+        title: "Field Deleted",
+        description: "The field has been removed from the survey.",
+      });
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to delete field");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.response?.data?.message || "Failed to delete field",
+      });
     }
   };
 

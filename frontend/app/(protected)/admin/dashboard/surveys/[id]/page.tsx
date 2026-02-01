@@ -27,6 +27,7 @@ import {
   Edit,
 } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
 
 interface FieldOption {
   label: string;
@@ -43,6 +44,7 @@ interface NewField {
 export default function SurveyDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { toast } = useToast();
   const [survey, setSurvey] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [newFields, setNewFields] = useState<NewField[]>([]);
@@ -115,9 +117,17 @@ export default function SurveyDetailPage() {
       const res = await api.get(`/admin/surveys/${params.id}`);
       setSurvey(res.data);
       setNewFields([]);
-    } catch (err) {
+      toast({
+        title: "Fields Added",
+        description: `${newFields.length} field(s) have been added to the survey.`,
+      });
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to save fields");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.response?.data?.message || "Failed to save fields",
+      });
     } finally {
       setSaving(false);
     }

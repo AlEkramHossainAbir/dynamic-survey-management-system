@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface FieldOption {
   label: string;
@@ -40,6 +41,7 @@ interface Field {
 
 export default function CreateSurveyPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [fields, setFields] = useState<Field[]>([]);
@@ -113,6 +115,11 @@ export default function CreateSurveyPage() {
 
   const handleSave = async () => {
     if (!validate()) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Please fix the errors before submitting.",
+      });
       return;
     }
 
@@ -130,10 +137,19 @@ export default function CreateSurveyPage() {
         await api.post(`/admin/surveys/${surveyId}/fields`, field);
       }
 
+      toast({
+        title: "Survey Created",
+        description: `"${title}" has been created successfully.`,
+      });
+
       router.push("/admin/dashboard/surveys");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to create survey. Please try again.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.response?.data?.message || "Failed to create survey. Please try again.",
+      });
     } finally {
       setSaving(false);
     }
