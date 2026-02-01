@@ -140,6 +140,69 @@ const deleteField = async (req, res) => {
   res.json({ message: "Field deleted" });
 };
 
+// GET /surveys/:id/submissions - Get all submissions for a survey
+const getSubmissions = async (req, res) => {
+  const surveyId = Number(req.params.id);
+
+  try {
+    const submissions = await prisma.submissions.findMany({
+      where: { survey_id: surveyId },
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        submission_answers: {
+          include: {
+            survey_fields: {
+              select: {
+                id: true,
+                label: true,
+                field_type: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { submitted_at: "desc" },
+    });
+
+    res.json({ success: true, data: submissions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch submissions" });
+  }
+};
+
+// PUT /surveys/:id - Update survey
+const updateSurvey = async (req, res) => {
+  const surveyId = Number(req.params.id);
+  const { title, description } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: "Title is required" });
+  }
+
+  try {
+    const survey = await prisma.surveys.update({
+      where: { id: surveyId },
+      data: {
+        title,
+        description,
+        updated_at: new Date(),
+      },
+    });
+
+    res.json(survey);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update survey" });
+  }
+};
+
 
 module.exports = {
   createSurvey,
@@ -149,4 +212,6 @@ module.exports = {
   addFieldToSurvey,
   updateField,
   deleteField,
+  getSubmissions,
+  updateSurvey,
 };
