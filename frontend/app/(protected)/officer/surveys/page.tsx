@@ -85,7 +85,7 @@ export default function OfficerSurveys() {
           {surveys.map((survey) => (
             <Link
               key={survey.id}
-              href={`/officer/dashboard/surveys/${survey.id}`}
+              href={`/officer/surveys/${survey.id}`}
               className="group"
             >
               <div className="h-full p-6 border rounded-lg bg-card hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:-translate-y-1">

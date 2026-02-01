@@ -17,7 +17,7 @@ export default function AdminLayout({
     // Auth is already checked by parent (protected) layout
     // Only need to verify admin role here
     if (!hasRole("admin")) {
-      router.replace("/officer/dashboard");
+      router.replace("/officer/surveys");
     }
   }, [router]);
 

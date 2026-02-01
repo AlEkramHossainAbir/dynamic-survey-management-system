@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { hasRole } from "@/lib/auth";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/officer-app-sidebar";
 
 export default function OfficerLayout({
   children,
@@ -24,5 +26,11 @@ export default function OfficerLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarTrigger />
+      <main className="w-full p-4">{children}</main>
+    </SidebarProvider>
+  );
 }

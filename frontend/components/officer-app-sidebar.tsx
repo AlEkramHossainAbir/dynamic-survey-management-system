@@ -33,20 +33,10 @@ import { useRouter } from "next/navigation"
 
 const items = [
   {
-    title: "Home",
-    url: "/officer/dashboard",
-    icon: Home,
-  },
-  {
     title: "Surveys",
-    url: "/officer/dashboard/surveys",
+    url: "/officer/surveys",
     icon: Inbox,
   },
-  {
-    title: "Submissions",
-    url: "/officer/dashboard/submissions",
-    icon: Calendar,
-  }
 ]
 
 export function AppSidebar() {

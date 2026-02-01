@@ -123,7 +123,7 @@ export default function SurveySubmissionPage() {
       
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push("/officer/dashboard/surveys");
+        router.push("/officer/surveys");
       }, 2000);
     } catch (err: any) {
       console.error(err);
@@ -150,7 +150,7 @@ export default function SurveySubmissionPage() {
         <div className="text-center space-y-3">
           <AlertCircle className="h-12 w-12 mx-auto text-red-500" />
           <p className="text-red-500">Survey not found</p>
-          <Link href="/officer/dashboard/surveys">
+          <Link href="/officer/surveys">
             <Button variant="outline">Back to Surveys</Button>
           </Link>
         </div>
@@ -184,7 +184,7 @@ export default function SurveySubmissionPage() {
       <div className="max-w-3xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="space-y-4">
-          <Link href="/officer/dashboard/surveys">
+          <Link href="/officer/surveys">
             <Button variant="ghost" size="sm" className="gap-2">
               <ChevronLeft className="h-4 w-4" />
               Back to Surveys
