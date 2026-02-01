@@ -5,29 +5,38 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
-
+import { setAuth } from "@/lib/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
+    setError("");
+    setIsLoading(true);
+
     try {
       const res = await api.post("/auth/login", { email, password });
-      const data = await res.data;
+      const data = res.data;
 
       if (res.status === 200) {
-        localStorage.setItem("token", data.token);
-        if(data.user.role === "officer") router.push("/officer/dashboard");
-        else if(data.user.role === "admin") router.push("/admin/dashboard");
-        
-      } else {
-        setError(data.message);
+        // Store token and user info in localStorage
+        setAuth(data.token, data.user);
+
+        // Redirect based on role
+        if (data.user.role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (data.user.role === "officer") {
+          router.push("/officer/dashboard");
+        }
       }
-    } catch (err) {
-      setError("Something went wrong!");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,9 +59,10 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="mb-4"
+          onKeyDown={(e) => e.key === "Enter" && handleLogin()}
         />
-        <Button onClick={handleLogin} className="w-full">
-          Login
+        <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
         </Button>
       </div>
     </div>

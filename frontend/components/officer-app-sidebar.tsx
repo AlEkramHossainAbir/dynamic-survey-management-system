@@ -4,8 +4,8 @@ import {
   Calendar,
   Home,
   Inbox,
-  Settings,
-  ChevronRight,
+  LogOut,
+  ChevronUp,
 } from "lucide-react"
 
 import {
@@ -13,7 +13,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -21,10 +20,16 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { getUser, clearAuth } from "@/lib/auth"
+import { useRouter } from "next/navigation"
 
 const items = [
   {
@@ -45,6 +50,14 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const user = getUser();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    clearAuth();
+    router.push("/login");
+  };
+
   return (
     <Sidebar>
         <SidebarHeader>
@@ -75,19 +88,31 @@ export function AppSidebar() {
 
       {/* 🔽 User Info Footer */}
       <SidebarFooter>
-        <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted">
-          <Avatar>
-            <AvatarImage src="/avatar.png" />
-            <AvatarFallback>AB</AvatarFallback>
-          </Avatar>
-
-          <div className="text-sm leading-tight">
-            <p className="font-medium">Abir Hossain</p>
-            <p className="text-muted-foreground text-xs">
-              abir@example.com
-            </p>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="h-auto py-3">
+                  <div className="flex items-center justify-between w-full">
+                    <div>
+                      <p className="font-medium text-sm">{user?.name || "Officer User"}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {user?.email || "officer@example.com"}
+                      </p>
+                    </div>
+                    <ChevronUp className="ml-auto" />
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )

@@ -1,0 +1,28 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { hasRole } from "@/lib/auth";
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Auth is already checked by parent (protected) layout
+    // Only need to verify admin role here
+    if (!hasRole("admin")) {
+      router.replace("/officer/dashboard");
+    }
+  }, [router]);
+
+  // Show nothing while checking role (prevents flash of wrong content)
+  if (!hasRole("admin")) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
