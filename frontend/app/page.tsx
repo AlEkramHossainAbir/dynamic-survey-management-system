@@ -12,9 +12,9 @@ export default function Home() {
     if (isAuthenticated()) {
       const user = getUser();
       if (user?.role === "admin") {
-        router.replace("/admin/dashboard");
+        router.replace("/admin/surveys");
       } else if (user?.role === "officer") {
-        router.replace("/officer/dashboard");
+        router.replace("/officer/surveys");
       }
     } else {
       // Redirect to login if not authenticated

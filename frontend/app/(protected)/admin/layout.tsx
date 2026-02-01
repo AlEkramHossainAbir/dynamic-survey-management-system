@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { hasRole } from "@/lib/auth";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/admin-app-sidebar";
 
 export default function AdminLayout({
   children,
@@ -24,5 +26,11 @@ export default function AdminLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarTrigger />
+      <main className="flex items-center content-center p-4">{children}</main>
+    </SidebarProvider>
+  );
 }

@@ -33,19 +33,9 @@ import { useRouter } from "next/navigation"
 
 const items = [
   {
-    title: "Home",
-    url: "/admin/dashboard",
-    icon: Home,
-  },
-  {
     title: "Surveys",
-    url: "/admin/dashboard/surveys",
+    url: "/admin/surveys",
     icon: Inbox,
-  },
-  {
-    title: "Submissions",
-    url: "/admin/dashboard/submissions",
-    icon: Calendar,
   }
 ]
 

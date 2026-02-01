@@ -85,7 +85,7 @@ export default function EditSurveyPage() {
         title: "Survey Updated",
         description: "Your changes have been saved successfully.",
       });
-      router.push("/admin/dashboard/surveys");
+      router.push("/admin/surveys");
     } catch (err: unknown) {
       console.error(err);
       if (axios.isAxiosError(err)) {
@@ -152,7 +152,7 @@ export default function EditSurveyPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
           <p className="text-red-500">Survey not found</p>
-          <Link href="/admin/dashboard/surveys">
+          <Link href="/admin/surveys">
             <Button variant="outline">Back to Surveys</Button>
           </Link>
         </div>
@@ -164,7 +164,7 @@ export default function EditSurveyPage() {
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="space-y-4">
-        <Link href="/admin/dashboard/surveys">
+        <Link href="/admin/surveys">
           <Button variant="ghost" size="sm" className="gap-2">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys
@@ -222,7 +222,7 @@ export default function EditSurveyPage() {
               Manage the fields in your survey
             </p>
           </div>
-          <Link href={`/admin/dashboard/surveys/${params.id}`}>
+          <Link href={`/admin/surveys/${params.id}`}>
             <Button variant="outline" className="gap-2">
               <Plus className="h-4 w-4" />
               Add Field
@@ -233,7 +233,7 @@ export default function EditSurveyPage() {
         {survey.survey_fields.length === 0 ? (
           <div className="bg-card border rounded-lg p-12 text-center space-y-3">
             <p className="text-muted-foreground">No fields added yet</p>
-            <Link href={`/admin/dashboard/surveys/${params.id}`}>
+            <Link href={`/admin/surveys/${params.id}`}>
               <Button variant="outline" className="gap-2">
                 <Plus className="h-4 w-4" />
                 Add Your First Field

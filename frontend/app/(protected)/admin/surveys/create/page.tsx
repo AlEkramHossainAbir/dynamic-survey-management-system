@@ -143,7 +143,7 @@ export default function CreateSurveyPage() {
         description: `"${title}" has been created successfully.`,
       });
 
-      router.push("/admin/dashboard/surveys");
+      router.push("/admin/surveys");
     } catch (err: unknown) {
       console.error(err);
        if (axios.isAxiosError(err)) {
@@ -173,7 +173,7 @@ export default function CreateSurveyPage() {
       <div className="max-w-5xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="space-y-4">
-          <Link href="/admin/dashboard/surveys">
+          <Link href="/admin/surveys">
             <Button variant="ghost" size="sm" className="gap-2">
               <ChevronLeft className="h-4 w-4" />
               Back to Surveys
@@ -454,7 +454,7 @@ export default function CreateSurveyPage() {
                 {fields.length !== 1 ? "s" : ""} added
               </div>
               <div className="flex gap-2">
-                <Link href="/admin/dashboard/surveys">
+                <Link href="/admin/surveys">
                   <Button variant="outline" disabled={saving}>
                     Cancel
                   </Button>

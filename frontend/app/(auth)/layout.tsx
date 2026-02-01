@@ -16,9 +16,9 @@ export default function AuthLayout({
     if (isAuthenticated()) {
       const user = getUser();
       if (user?.role === "admin") {
-        router.replace("/admin/dashboard");
+        router.replace("/admin/surveys");
       } else if (user?.role === "officer") {
-        router.replace("/officer/dashboard");
+        router.replace("/officer/surveys");
       }
     }
   }, [router]);

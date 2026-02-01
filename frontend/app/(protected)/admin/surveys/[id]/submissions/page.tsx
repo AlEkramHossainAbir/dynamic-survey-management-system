@@ -132,7 +132,7 @@ export default function SubmissionsPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
           <p className="text-red-500">{error || "Survey not found"}</p>
-          <Link href="/admin/dashboard/surveys">
+          <Link href="/admin/surveys">
             <Button variant="outline">Back to Surveys</Button>
           </Link>
         </div>
@@ -144,7 +144,7 @@ export default function SubmissionsPage() {
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="space-y-4">
-        <Link href="/admin/dashboard/surveys">
+        <Link href="/admin/surveys">
           <Button variant="ghost" size="sm" className="gap-2">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys

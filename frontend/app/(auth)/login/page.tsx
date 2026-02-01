@@ -41,9 +41,9 @@ export default function LoginPage() {
 
         // Redirect based on role
         if (data.user.role === "admin") {
-          router.push("/admin/dashboard");
+          router.push("/admin/surveys");
         } else if (data.user.role === "officer") {
-          router.push("/officer/dashboard");
+          router.push("/officer/surveys");
         }
       }
     } catch (err: unknown) {

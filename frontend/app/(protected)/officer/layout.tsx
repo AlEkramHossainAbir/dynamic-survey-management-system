@@ -15,7 +15,7 @@ export default function OfficerLayout({
     // Auth is already checked by parent (protected) layout
     // Only need to verify officer role here
     if (!hasRole("officer")) {
-      router.replace("/admin/dashboard");
+      router.replace("/admin/surveys");
     }
   }, [router]);
 

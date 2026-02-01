@@ -159,7 +159,7 @@ export default function SurveyDetailPage() {
     <div className="p-6 space-y-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="space-y-4">
-        <Link href="/admin/dashboard/surveys">
+        <Link href="/admin/surveys">
           <Button variant="ghost" size="sm" className="gap-2">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys
@@ -174,13 +174,13 @@ export default function SurveyDetailPage() {
             )}
           </div>
           <div className="flex gap-2">
-            <Link href={`/admin/dashboard/surveys/${params.id}/edit`}>
+            <Link href={`/admin/surveys/${params.id}/edit`}>
               <Button variant="outline" className="gap-2">
                 <Edit className="h-4 w-4" />
                 Edit
               </Button>
             </Link>
-            <Link href={`/admin/dashboard/surveys/${params.id}/submissions`}>
+            <Link href={`/admin/surveys/${params.id}/submissions`}>
               <Button variant="outline" className="gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Submissions

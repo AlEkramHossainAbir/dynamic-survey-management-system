@@ -93,7 +93,7 @@ export default function SurveyListPage() {
             Create, manage, and view responses for your surveys
           </p>
         </div>
-        <Link href="/admin/dashboard/surveys/create">
+        <Link href="/admin/surveys/create">
           <Button size="lg" className="gap-2">
             <Plus className="h-5 w-5" />
             Create Survey
@@ -114,7 +114,7 @@ export default function SurveyListPage() {
               responses, and analyze the results.
             </p>
           </div>
-          <Link href="/admin/dashboard/surveys/create">
+          <Link href="/admin/surveys/create">
             <Button size="lg" className="gap-2 mt-4">
               <Plus className="h-5 w-5" />
               Create Your First Survey
@@ -157,19 +157,19 @@ export default function SurveyListPage() {
 
                 {/* Card Actions */}
                 <div className="px-6 pb-6 flex gap-2">
-                  <Link href={`/admin/dashboard/surveys/${survey.id}`} className="flex-1">
+                  <Link href={`/admin/surveys/${survey.id}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full gap-2">
                       <Eye className="h-4 w-4" />
                       View
                     </Button>
                   </Link>
-                  <Link href={`/admin/dashboard/surveys/${survey.id}/edit`}>
+                  <Link href={`/admin/surveys/${survey.id}/edit`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Edit className="h-4 w-4" />
                       Edit
                     </Button>
                   </Link>
-                  <Link href={`/admin/dashboard/surveys/${survey.id}/submissions`}>
+                  <Link href={`/admin/surveys/${survey.id}/submissions`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <BarChart3 className="h-4 w-4" />
                     </Button>
