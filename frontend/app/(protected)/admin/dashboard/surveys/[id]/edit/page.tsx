@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface FieldOption {
   label: string;
@@ -85,13 +86,22 @@ export default function EditSurveyPage() {
         description: "Your changes have been saved successfully.",
       });
       router.push("/admin/dashboard/surveys");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast({
+      if (axios.isAxiosError(err)) {
+         toast({
         variant: "destructive",
         title: "Error",
-        description: err.response?.data?.message || "Failed to update survey",
+        description: err.response?.data?.message ,
       });
+      }
+      else{
+        toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update survey",
+      });
+      }
     } finally {
       setSaving(false);
     }
@@ -108,13 +118,21 @@ export default function EditSurveyPage() {
         title: "Field Deleted",
         description: "The field has been removed from the survey.",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: err.response?.data?.message || "Failed to delete field",
-      });
+       if (axios.isAxiosError(err)) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: err.response?.data?.message,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete field",
+        });
+      }
     }
   };
 

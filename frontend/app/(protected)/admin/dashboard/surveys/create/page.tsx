@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface FieldOption {
   label: string;
@@ -143,13 +144,22 @@ export default function CreateSurveyPage() {
       });
 
       router.push("/admin/dashboard/surveys");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast({
+       if (axios.isAxiosError(err)) {
+       toast({
         variant: "destructive",
         title: "Error",
-        description: err.response?.data?.message || "Failed to create survey. Please try again.",
+        description: err.response?.data?.message,
       });
+      } else {
+        toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create survey. Please try again.",
+      });
+      }
+      
     } finally {
       setSaving(false);
     }

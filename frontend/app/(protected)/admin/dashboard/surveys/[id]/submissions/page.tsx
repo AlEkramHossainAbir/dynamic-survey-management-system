@@ -66,7 +66,7 @@ export default function SubmissionsPage() {
         ]);
         setSurvey(surveyRes.data);
         setSubmissions(submissionsRes.data.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error(err);
         setError("Failed to load submissions");
       } finally {
@@ -205,7 +205,7 @@ export default function SubmissionsPage() {
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold">No Submissions Yet</h3>
             <p className="text-sm text-muted-foreground max-w-md">
-              This survey hasn't received any responses yet. Share it with officers
+              This survey hasn&apos;t received any responses yet. Share it with officers
               to start collecting data.
             </p>
           </div>
