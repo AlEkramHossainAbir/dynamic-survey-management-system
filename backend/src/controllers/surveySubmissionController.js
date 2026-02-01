@@ -65,4 +65,30 @@ const submitSurvey = async (req, res) => {
   }
 };
 
-module.exports = { getOfficerSurveys, submitSurvey };
+// GET /surveys/:id - Get single survey for officer
+const getOfficerSurveyById = async (req, res) => {
+  const surveyId = Number(req.params.id);
+
+  try {
+    const survey = await prisma.surveys.findUnique({
+      where: { id: surveyId },
+      include: {
+        survey_fields: {
+          orderBy: { order_index: "asc" },
+          include: { field_options: true },
+        },
+      },
+    });
+
+    if (!survey) {
+      return res.status(404).json({ success: false, message: "Survey not found" });
+    }
+
+    res.json(survey);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to fetch survey" });
+  }
+};
+
+module.exports = { getOfficerSurveys, submitSurvey, getOfficerSurveyById };

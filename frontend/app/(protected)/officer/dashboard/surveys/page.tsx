@@ -4,21 +4,32 @@ import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { RadioGroup } from "@/components/ui/radio-group";
-import { Radio } from "lucide-react";
+import { FileText, Calendar, ChevronRight, Loader2 } from "lucide-react";
+
+interface Survey {
+  id: number;
+  title: string;
+  description: string | null;
+  created_at: string;
+  survey_fields: any[];
+}
 
 export default function OfficerSurveys() {
-  const [surveys, setSurveys] = useState([]);
-  const [answers, setAnswers] = useState({}); // { fieldId: value }
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchSurveys = async () => {
+    setLoading(true);
+    setError("");
     try {
       const res = await api.get(`/officer/surveys`);
       setSurveys(res.data.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError("Failed to load surveys. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,69 +37,95 @@ export default function OfficerSurveys() {
     fetchSurveys();
   }, []);
 
-  
-
-  const handleChange = (fieldId, value) => {
-    setAnswers(prev => ({ ...prev, [fieldId]: value }));
-  };
-
-  const handleSubmit = async surveyId => {
-    try {
-      const payload = Object.entries(answers).map(([field_id, value]) => ({
-        field_id: parseInt(field_id),
-        value,
-      }));
-
-      await api.post(`/officer/surveys/${surveyId}/submit`, { answers: payload });
-      alert("Survey submitted successfully!");
-      setAnswers({});
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Submission failed");
-    }
-  };
-  
-  return (
-    <div className="p-6 space-y-4">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold">Officer Surveys</h1>
-
-      {surveys.map(survey => (
-        <div key={survey.id} className="p-4 border rounded-md space-y-4">
-          <h2 className="text-xl font-semibold">{survey.title}</h2>
-          <p>{survey.description}</p>
-
-          {survey.survey_fields.map(field => (
-            <div key={field.id} className="space-y-2">
-              <label className="block font-medium">{field.label} {field.is_required && "*"}</label>
-
-              {field.field_type === "text" && (
-                <Input
-                  value={answers[field.id] || ""}
-                  onChange={e => handleChange(field.id, e.target.value)}
-                />
-              )}
-
-              {field.field_type === "radio" && (
-                <RadioGroup
-                  value={answers[field.id] || ""}
-                  onValueChange={value => handleChange(field.id, value)}
-                  className="flex space-x-4"
-                >
-                  {field.field_options.map(option => (
-                    <Radio key={option.id} value={option.value}>
-                      {option.label}
-                    </Radio>
-                  ))}
-                </RadioGroup>
-              )}
-            </div>
-          ))}
-
-          <Button onClick={() => handleSubmit(survey.id)}>Submit Survey</Button>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">Loading surveys...</p>
         </div>
-      ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-3">
+          <p className="text-red-500">{error}</p>
+          <Button onClick={fetchSurveys} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Available Surveys</h1>
+        <p className="text-muted-foreground">
+          Select a survey to view and submit your response
+        </p>
+      </div>
+
+      {surveys.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <FileText className="h-16 w-16 text-muted-foreground/50" />
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-semibold">No Surveys Available</h3>
+            <p className="text-sm text-muted-foreground">
+              There are no surveys to complete at this time.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {surveys.map((survey) => (
+            <Link
+              key={survey.id}
+              href={`/officer/dashboard/surveys/${survey.id}`}
+              className="group"
+            >
+              <div className="h-full p-6 border rounded-lg bg-card hover:shadow-lg transition-all duration-300 hover:border-primary/50 hover:-translate-y-1">
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <FileText className="h-5 w-5 text-primary" />
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                      {survey.title}
+                    </h3>
+                    {survey.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {survey.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>
+                        {new Date(survey.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <FileText className="h-3.5 w-3.5" />
+                      <span>{survey.survey_fields?.length || 0} fields</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
