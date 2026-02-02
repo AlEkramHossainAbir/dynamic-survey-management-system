@@ -78,7 +78,7 @@ Before you begin, make sure you have the following installed:
 
 ### Step 1: Clone the Repository
 ```bash
-git clone [<your-repository-url>](https://github.com/AlEkramHossainAbir/dynamic-survey-management-system)
+git clone https://github.com/AlEkramHossainAbir/dynamic-survey-management-system
 cd dynamic-survey-management-system
 ```
 
@@ -108,8 +108,6 @@ cp .env.example .env
 
 4. **Important:** Pull the database schema and generate Prisma client:
 ```bash
-# This command syncs your local schema with the database
-npx prisma db pull
 
 # This command generates the Prisma Client for database access
 npx prisma generate
