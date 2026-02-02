@@ -223,7 +223,7 @@ export default function EditSurveyPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
+    <div className="p-6 space-y-6 max-w-4xl mx-auto w-full">
       {/* Header */}
       <div className="space-y-4">
         <Link href="/admin/surveys">

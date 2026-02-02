@@ -30,7 +30,7 @@ export default function AdminLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <main className="flex items-center content-center p-4">{children}</main>
+      <main className="flex items-center content-center p-4 w-full">{children}</main>
     </SidebarProvider>
   );
 }

@@ -81,45 +81,6 @@ export default function SubmissionsPage() {
     fetchData();
   }, [params.id, page]);
 
-  const exportToCSV = () => {
-    if (submissions.length === 0) return;
-
-    // Get all unique field labels
-    const fieldLabels = new Set<string>();
-    submissions.forEach((sub) => {
-      sub.submission_answers.forEach((ans) => {
-        fieldLabels.add(ans.survey_fields.label);
-      });
-    });
-
-    const headers = ["User", "Email", "Submitted At", ...Array.from(fieldLabels)];
-    const rows = submissions.map((sub) => {
-      const answerMap: Record<string, string> = {};
-      sub.submission_answers.forEach((ans) => {
-        answerMap[ans.survey_fields.label] = ans.value;
-      });
-
-      return [
-        sub.users.name,
-        sub.users.email,
-        new Date(sub.submitted_at).toLocaleString(),
-        ...Array.from(fieldLabels).map((label) => answerMap[label] || ""),
-      ];
-    });
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${survey?.title || "survey"}-submissions.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   if (loading) {
     return (
@@ -146,154 +107,176 @@ export default function SubmissionsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="space-y-4">
-        <Link href="/admin/surveys">
-          <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Surveys
-          </Button>
-        </Link>
-
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{survey.title}</h1>
-            {survey.description && (
-              <p className="text-muted-foreground">{survey.description}</p>
-            )}
-          </div>
-          {submissions.length > 0 && (
-            <Button onClick={exportToCSV} variant="outline" className="gap-2 cursor-pointer">
-              <Download className="h-4 w-4" />
-              Export CSV
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 w-full">
+      <div className="p-8 space-y-8 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="space-y-6">
+          <Link href="/admin/surveys">
+            <Button variant="ghost" size="sm" className="gap-2 cursor-pointer hover:bg-accent">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Surveys
             </Button>
-          )}
+          </Link>
+
+          <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-8 shadow-sm">
+            <div className="flex items-start justify-between gap-6">
+              <div className="space-y-2 flex-1">
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  {survey.title}
+                </h1>
+                {survey.description && (
+                  <p className="text-muted-foreground text-lg">{survey.description}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-6 space-y-3 hover:shadow-md transition-all">
+              <div className="flex items-center gap-3 text-primary">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Users className="h-5 w-5" />
+                </div>
+                <span className="text-sm font-semibold uppercase tracking-wide">Total Responses</span>
+              </div>
+              <p className="text-4xl font-bold">{total}</p>
+            </div>
+            <div className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border border-blue-500/20 rounded-xl p-6 space-y-3 hover:shadow-md transition-all">
+              <div className="flex items-center gap-3 text-blue-600">
+                <div className="p-2 bg-blue-500/10 rounded-lg">
+                  <Calendar className="h-5 w-5" />
+                </div>
+                <span className="text-sm font-semibold uppercase tracking-wide">Latest Response</span>
+              </div>
+              <p className="text-xl font-semibold">
+                {submissions.length > 0
+                  ? new Date(submissions[0].submitted_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })
+                  : "N/A"}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-green-500/5 to-green-500/10 border border-green-500/20 rounded-xl p-6 space-y-3 hover:shadow-md transition-all">
+              <div className="flex items-center gap-3 text-green-600">
+                <div className="p-2 bg-green-500/10 rounded-lg">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <span className="text-sm font-semibold uppercase tracking-wide">Response Rate</span>
+              </div>
+              <p className="text-4xl font-bold">100%</p>
+            </div>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="bg-card border rounded-lg p-4 space-y-1">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span className="text-sm font-medium">Total Responses</span>
+        {/* Empty State */}
+        {submissions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 space-y-6 bg-gradient-to-br from-card/80 to-muted/20 backdrop-blur-sm border-2 border-dashed rounded-2xl">
+            <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl">
+              <FileText className="h-16 w-16 text-primary" />
             </div>
-            <p className="text-2xl font-bold">{submissions.length}</p>
-          </div>
-          <div className="bg-card border rounded-lg p-4 space-y-1">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span className="text-sm font-medium">Latest Response</span>
+            <div className="text-center space-y-3 max-w-md">
+              <h3 className="text-2xl font-bold">No Submissions Yet</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                This survey hasn&apos;t received any responses yet. Share it with officers
+                to start collecting valuable data.
+              </p>
             </div>
-            <p className="text-lg font-semibold">
-              {submissions.length > 0
-                ? new Date(submissions[0].submitted_at).toLocaleDateString()
-                : "N/A"}
-            </p>
+            <Link href="/admin/surveys">
+              <Button size="lg" className="gap-2 mt-4">
+                Back to Surveys
+              </Button>
+            </Link>
           </div>
-          <div className="bg-card border rounded-lg p-4 space-y-1">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <FileText className="h-4 w-4" />
-              <span className="text-sm font-medium">Response Rate</span>
-            </div>
-            <p className="text-2xl font-bold">100%</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Empty State */}
-      {submissions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 space-y-4 bg-card border rounded-lg">
-          <div className="p-4 bg-muted rounded-full">
-            <FileText className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <div className="text-center space-y-2">
-            <h3 className="text-xl font-semibold">No Submissions Yet</h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              This survey hasn&apos;t received any responses yet. Share it with officers
-              to start collecting data.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-card border rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">User</TableHead>
-                  <TableHead className="w-[180px]">Submitted At</TableHead>
-                  <TableHead>Responses</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {submissions.map((submission) => (
-                  <TableRow key={submission.id}>
-                    <TableCell>
-                      <div className="space-y-0.5">
-                        <p className="font-medium">{submission.users.name}</p>
-                        <p className="text-xs text-muted-foreground">
+        ) : (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              {submissions.map((submission) => (
+                <div
+                  key={submission.id}
+                  className="bg-card/80 backdrop-blur-sm border rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-start justify-between gap-4 pb-4 border-b">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-primary/10 rounded-lg">
+                        <Users className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-semibold text-lg">{submission.users.name}</p>
+                        <p className="text-sm text-muted-foreground">
                           {submission.users.email}
                         </p>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(submission.submitted_at).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-2">
-                        {submission.submission_answers.map((answer) => (
-                          <div
-                            key={answer.id}
-                            className="text-sm border-l-2 border-primary/20 pl-3 py-1"
-                          >
-                            <span className="font-medium text-muted-foreground">
-                              {answer.survey_fields.label}:
-                            </span>{" "}
-                            <span>{answer.value}</span>
-                          </div>
-                        ))}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      {new Date(submission.submitted_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {submission.submission_answers.map((answer, idx) => (
+                      <div
+                        key={answer.id}
+                        className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold shrink-0">
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <p className="font-medium text-sm text-muted-foreground">
+                            {answer.survey_fields.label}
+                          </p>
+                          <p className="text-base font-medium">{answer.value}</p>
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 border-t">
-              <p className="text-sm text-muted-foreground">
-                Showing {(page - 1) * 10 + 1}-{Math.min(page * 10, total)} of {total} submissions
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="cursor-pointer"
-                >
-                  Previous
-                </Button>
-                <div className="text-sm font-medium">
-                  Page {page} of {totalPages}
+                    ))}
+                  </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="cursor-pointer"
-                >
-                  Next
-                </Button>
-              </div>
+              ))}
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-6 py-5 bg-card/50 backdrop-blur-sm border rounded-xl">
+                <p className="text-sm text-muted-foreground font-medium">
+                  Showing {(page - 1) * 10 + 1}-{Math.min(page * 10, total)} of {total} submissions
+                </p>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="cursor-pointer"
+                  >
+                    Previous
+                  </Button>
+                  <div className="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-semibold">
+                    Page {page} of {totalPages}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="cursor-pointer"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

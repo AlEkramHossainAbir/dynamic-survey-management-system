@@ -19,27 +19,7 @@ import {
 import { Loader2, AlertCircle, CheckCircle2, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import axios from "axios";
-
-interface FieldOption {
-  id: number;
-  label: string;
-  value: string;
-}
-
-interface SurveyField {
-  id: number;
-  label: string;
-  field_type: string;
-  is_required: boolean;
-  field_options: FieldOption[];
-}
-
-interface Survey {
-  id: number;
-  title: string;
-  description: string | null;
-  survey_fields: SurveyField[];
-}
+import { Survey } from "@/lib/types";
 
 export default function SurveySubmissionPage() {
   const params = useParams();
@@ -198,7 +178,7 @@ export default function SurveySubmissionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 w-full">
       <div className="max-w-3xl mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="space-y-4">

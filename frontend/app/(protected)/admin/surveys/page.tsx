@@ -85,7 +85,7 @@ export default function SurveyListPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 max-w-7xl mx-auto w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -173,6 +173,7 @@ export default function SurveyListPage() {
                   <Link href={`/admin/surveys/${survey.id}/submissions`}>
                     <Button variant="outline" size="sm" className="gap-2 cursor-pointer">
                       <BarChart3 className="h-4 w-4" />
+                      Submissions
                     </Button>
                   </Link>
                   <Button

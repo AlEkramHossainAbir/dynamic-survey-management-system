@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -22,33 +22,22 @@ import {
   Trash2,
   Save,
   Loader2,
-  Eye,
   BarChart3,
   Edit,
 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { NewField, Survey, SurveyField, FieldOption } from "@/lib/types";
 
-interface FieldOption {
-  label: string;
-  value: string;
-}
-
-interface NewField {
-  label: string;
-  field_type: string;
-  is_required: boolean;
-  options: FieldOption[];
-}
 
 export default function SurveyDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const { toast } = useToast();
-  const [survey, setSurvey] = useState<any>(null);
+  const [survey, setSurvey] = useState<Survey | null>(null);
   const [loading, setLoading] = useState(true);
   const [newFields, setNewFields] = useState<NewField[]>([]);
   const [saving, setSaving] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchSurvey = async () => {
@@ -62,8 +51,9 @@ export default function SurveyDetailPage() {
         setLoading(false);
       }
     };
+    
     fetchSurvey();
-  }, [params.id]);
+  }, [params.id, refreshKey]);
 
   const addField = () => {
     setNewFields([
@@ -107,26 +97,43 @@ export default function SurveyDetailPage() {
   };
 
   const saveFields = async () => {
+    // Filter out empty fields
+    const validFields = newFields.filter(field => field.label.trim() !== '');
+    
+    if (validFields.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please add at least one field with a label",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
-      for (const field of newFields) {
-        if (!field.label) continue;
-        await api.post(`/admin/surveys/${params.id}/fields`, field);
-      }
-      // Refresh survey
-      const res = await api.get(`/admin/surveys/${params.id}`);
-      setSurvey(res.data);
+      // Add all fields
+      await Promise.all(
+        validFields.map(field => 
+          api.post(`/admin/surveys/${params.id}/fields`, field)
+        )
+      );
+      
+      // Clear new fields first
       setNewFields([]);
+      
+      // Refresh survey data by triggering useEffect
+      setRefreshKey(prev => prev + 1);
+      
       toast({
-        title: "Fields Added",
-        description: `${newFields.length} field(s) have been added to the survey.`,
+        title: "Success",
+        description: `${validFields.length} field(s) have been added to the survey.`,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast({
         variant: "destructive",
         title: "Error",
-        description: err.response?.data?.message || "Failed to save fields",
+        description: (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to save fields",
       });
     } finally {
       setSaving(false);
@@ -156,81 +163,95 @@ export default function SurveyDetailPage() {
     ["checkbox", "radio", "select"].includes(type);
 
   return (
-    <div className="p-6 space-y-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="space-y-4">
-        <Link href="/admin/surveys">
-          <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
-            <ChevronLeft className="h-4 w-4" />
-            Back to Surveys
-          </Button>
-        </Link>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 w-full">
+      <div className="p-8 space-y-8 max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="space-y-6">
+          <Link href="/admin/surveys">
+            <Button variant="ghost" size="sm" className="gap-2 cursor-pointer hover:bg-accent">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Surveys
+            </Button>
+          </Link>
 
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{survey.title}</h1>
-            {survey.description && (
-              <p className="text-muted-foreground">{survey.description}</p>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Link href={`/admin/surveys/${params.id}/edit`}>
-              <Button variant="outline" className="gap-2 cursor-pointer">
-                <Edit className="h-4 w-4" />
-                Edit
-              </Button>
-            </Link>
-            <Link href={`/admin/surveys/${params.id}/submissions`}>
-              <Button variant="outline" className="gap-2 cursor-pointer">
-                <BarChart3 className="h-4 w-4" />
-                Submissions
-              </Button>
-            </Link>
+          <div className="bg-card/50 backdrop-blur-sm border rounded-xl p-8 shadow-sm">
+            <div className="flex items-start justify-between gap-6">
+              <div className="space-y-2 flex-1">
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  {survey.title}
+                </h1>
+                {survey.description && (
+                  <p className="text-muted-foreground text-lg">{survey.description}</p>
+                )}
+              </div>
+              <div className="flex gap-3 shrink-0">
+                <Link href={`/admin/surveys/${params.id}/edit`}>
+                  <Button variant="outline" className="gap-2 cursor-pointer hover:bg-accent">
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                </Link>
+                <Link href={`/admin/surveys/${params.id}/submissions`}>
+                  <Button variant="default" className="gap-2 cursor-pointer">
+                    <BarChart3 className="h-4 w-4" />
+                    Submissions
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Existing Fields */}
-      {survey.survey_fields.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Existing Fields</h2>
-          <div className="space-y-3">
-            {survey.survey_fields.map((field: any, index: number) => (
-              <div
-                key={field.id}
-                className="bg-card border rounded-lg p-5 space-y-3"
-              >
+        {/* Existing Fields */}
+        {survey.survey_fields.length > 0 && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+              <h2 className="text-2xl font-semibold">Existing Fields</h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+            </div>
+            <div className="space-y-4">
+              {survey.survey_fields.map((field: SurveyField, index: number) => (
+                <div
+                  key={field.id}
+                  className="bg-card/80 backdrop-blur-sm border rounded-xl p-6 space-y-4 shadow-sm hover:shadow-md transition-all duration-200"
+                >
                 <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Q{index + 1}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
+                        {index + 1}
                       </span>
-                      <Label className="text-base font-semibold">
+                      <Label className="text-lg font-semibold">
                         {field.label}
                         {field.is_required && (
-                          <span className="text-red-500 ml-1">*</span>
+                          <span className="text-red-500 ml-1.5 text-base">*</span>
                         )}
                       </Label>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary/10 text-primary font-medium">
+                    <div className="flex items-center gap-2 ml-11">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-xs uppercase tracking-wide">
                         {field.field_type}
                       </span>
+                      {field.is_required && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-500/10 text-red-600 font-medium text-xs">
+                          Required
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Field Preview */}
-                <div className="pt-3 border-t">
+                <div className="pt-4 border-t ml-11">
                   {field.field_type === "text" && (
-                    <Input placeholder="Text input preview" disabled />
+                    <Input placeholder="Text input preview" disabled className="bg-muted/50" />
                   )}
                   {field.field_type === "textarea" && (
-                    <Textarea placeholder="Textarea preview" disabled rows={3} />
+                    <Textarea placeholder="Textarea preview" disabled rows={3} className="bg-muted/50" />
                   )}
                   {field.field_type === "checkbox" &&
-                    field.field_options.map((opt: any) => (
+                    field.field_options.map((opt: FieldOption) => (
                       <div key={opt.id} className="flex items-center gap-2 mb-2">
                         <Checkbox disabled />
                         <Label>{opt.label}</Label>
@@ -238,13 +259,13 @@ export default function SurveyDetailPage() {
                     ))}
                   {field.field_type === "radio" && (
                     <RadioGroup disabled>
-                      {field.field_options.map((opt: any) => (
+                      {field.field_options.map((opt: FieldOption) => (
                         <div
                           key={opt.id}
                           className="flex items-center space-x-2"
                         >
-                          <RadioGroupItem value={opt.value} id={opt.id} />
-                          <Label htmlFor={opt.id}>{opt.label}</Label>
+                          <RadioGroupItem value={opt.value} id={String(opt.id)} />
+                          <Label htmlFor={String(opt.id)}>{opt.label}</Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -255,7 +276,7 @@ export default function SurveyDetailPage() {
                         <SelectValue placeholder="Select an option" />
                       </SelectTrigger>
                       <SelectContent>
-                        {field.field_options.map((opt: any) => (
+                        {field.field_options.map((opt: FieldOption) => (
                           <SelectItem key={opt.id} value={opt.value}>
                             {opt.label}
                           </SelectItem>
@@ -270,39 +291,54 @@ export default function SurveyDetailPage() {
         </div>
       )}
 
-      {/* Add New Fields */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">
-            {survey.survey_fields.length > 0 ? "Add More Fields" : "Add Fields"}
-          </h2>
-          <Button onClick={addField} variant="outline" className="gap-2 cursor-pointer">
-            <Plus className="h-4 w-4" />
-            Add Field
-          </Button>
-        </div>
-
-        {newFields.length === 0 && survey.survey_fields.length === 0 && (
-          <div className="bg-card border rounded-lg p-12 text-center space-y-3">
-            <p className="text-muted-foreground">
-              No fields added yet. Start by adding your first field.
-            </p>
-          </div>
-        )}
-
-        {newFields.map((field, index) => (
-          <div key={index} className="bg-card border rounded-lg p-5 space-y-4">
-            <div className="flex items-start justify-between">
-              <h3 className="font-semibold">New Field #{index + 1}</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removeField(index)}
-                className="text-red-600 hover:text-red-700 cursor-pointer"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+        {/* Add New Fields */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+              <h2 className="text-2xl font-semibold">
+                {survey.survey_fields.length > 0 ? "Add More Fields" : "Add Fields"}
+              </h2>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
             </div>
+            <Button onClick={addField} size="lg" className="gap-2 cursor-pointer shadow-md hover:shadow-lg transition-all">
+              <Plus className="h-5 w-5" />
+              Add Field
+            </Button>
+          </div>
+
+          {newFields.length === 0 && survey.survey_fields.length === 0 && (
+            <div className="bg-gradient-to-br from-card/80 to-muted/20 backdrop-blur-sm border-2 border-dashed rounded-2xl p-16 text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
+                <Plus className="h-8 w-8 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold">No Fields Yet</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Start building your survey by adding your first field. Click the &quot;Add Field&quot; button above.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {newFields.map((field, index) => (
+            <div key={index} className="bg-card/80 backdrop-blur-sm border-2 border-primary/20 rounded-xl p-6 space-y-5 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                    {survey.survey_fields.length + index + 1}
+                  </span>
+                  <h3 className="text-lg font-semibold">New Field</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeField(index)}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
@@ -414,7 +450,8 @@ export default function SurveyDetailPage() {
               )}
             </Button>
           </div>
-        )}
+)}
+        </div>
       </div>
     </div>
   );

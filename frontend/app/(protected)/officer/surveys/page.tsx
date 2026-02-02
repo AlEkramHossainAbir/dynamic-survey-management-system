@@ -5,14 +5,7 @@ import { api } from "@/lib/api";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileText, Calendar, ChevronRight, Loader2 } from "lucide-react";
-
-interface Survey {
-  id: number;
-  title: string;
-  description: string | null;
-  created_at: string;
-  survey_fields: any[];
-}
+import { Survey } from "@/lib/types";
 
 export default function OfficerSurveys() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -66,7 +59,7 @@ export default function OfficerSurveys() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+    <div className="p-6 space-y-6 max-w-6xl mx-auto w-full">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Available Surveys</h1>
         <p className="text-muted-foreground">
