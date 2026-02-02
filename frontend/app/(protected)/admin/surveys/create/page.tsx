@@ -156,10 +156,23 @@ export default function CreateSurveyPage() {
 
   const handleSave = async () => {
     if (!validate()) {
+      // Get the first error message
+      const firstErrorKey = Object.keys(errors)[0];
+      const firstErrorMessage = errors[firstErrorKey];
+      
+      // Scroll to the first error field
+      if (firstErrorKey) {
+        const element = document.getElementById(firstErrorKey);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Validation Error",
-        description: "Please fix the errors before submitting.",
+        description: firstErrorMessage,
       });
       return;
     }
