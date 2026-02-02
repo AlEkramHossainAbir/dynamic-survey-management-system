@@ -53,6 +53,9 @@ export default function SubmissionsPage() {
   const params = useParams();
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -62,10 +65,12 @@ export default function SubmissionsPage() {
       try {
         const [surveyRes, submissionsRes] = await Promise.all([
           api.get(`/admin/surveys/${params.id}`),
-          api.get(`/admin/surveys/${params.id}/submissions`),
+          api.get(`/admin/surveys/${params.id}/submissions?page=${page}&limit=10`),
         ]);
         setSurvey(surveyRes.data);
         setSubmissions(submissionsRes.data.data);
+        setTotalPages(submissionsRes.data.meta.totalPages);
+        setTotal(submissionsRes.data.meta.total);
       } catch (err: unknown) {
         console.error(err);
         setError("Failed to load submissions");
@@ -74,7 +79,7 @@ export default function SubmissionsPage() {
       }
     };
     fetchData();
-  }, [params.id]);
+  }, [params.id, page]);
 
   const exportToCSV = () => {
     if (submissions.length === 0) return;
@@ -255,6 +260,36 @@ export default function SubmissionsPage() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4">
+              <p className="text-sm text-muted-foreground">
+                Showing {(page - 1) * 10 + 1}-{Math.min(page * 10, total)} of {total} submissions
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Previous
+                </Button>
+                <div className="text-sm font-medium">
+                  Page {page} of {totalPages}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

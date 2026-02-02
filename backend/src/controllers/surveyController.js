@@ -143,34 +143,53 @@ const deleteField = async (req, res) => {
 // GET /surveys/:id/submissions - Get all submissions for a survey
 const getSubmissions = async (req, res) => {
   const surveyId = Number(req.params.id);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
   try {
-    const submissions = await prisma.submissions.findMany({
-      where: { survey_id: surveyId },
-      include: {
-        users: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    const [submissions, total] = await Promise.all([
+      prisma.submissions.findMany({
+        where: { survey_id: surveyId },
+        skip,
+        take: limit,
+        include: {
+          users: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
-        },
-        submission_answers: {
-          include: {
-            survey_fields: {
-              select: {
-                id: true,
-                label: true,
-                field_type: true,
+          submission_answers: {
+            include: {
+              survey_fields: {
+                select: {
+                  id: true,
+                  label: true,
+                  field_type: true,
+                },
               },
             },
           },
         },
-      },
-      orderBy: { submitted_at: "desc" },
-    });
+        orderBy: { submitted_at: "desc" },
+      }),
+      prisma.submissions.count({
+        where: { survey_id: surveyId },
+      }),
+    ]);
 
-    res.json({ success: true, data: submissions });
+    res.json({
+      success: true,
+      data: submissions,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Failed to fetch submissions" });
@@ -203,6 +222,33 @@ const updateSurvey = async (req, res) => {
   }
 };
 
+// PUT /surveys/:surveyId/fields/reorder - Reorder fields
+const reorderFields = async (req, res) => {
+  const surveyId = Number(req.params.surveyId);
+  const { fieldOrders } = req.body; // Array of { id, order_index }
+
+  if (!Array.isArray(fieldOrders) || fieldOrders.length === 0) {
+    return res.status(400).json({ message: "Field orders array is required" });
+  }
+
+  try {
+    // Update each field's order_index
+    await Promise.all(
+      fieldOrders.map((field) =>
+        prisma.survey_fields.update({
+          where: { id: field.id },
+          data: { order_index: field.order_index },
+        })
+      )
+    );
+
+    res.json({ success: true, message: "Fields reordered successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to reorder fields" });
+  }
+};
+
 
 module.exports = {
   createSurvey,
@@ -214,4 +260,5 @@ module.exports = {
   deleteField,
   getSubmissions,
   updateSurvey,
+  reorderFields,
 };

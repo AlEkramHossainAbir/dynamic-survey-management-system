@@ -14,6 +14,8 @@ import {
   Plus,
   Trash2,
   GripVertical,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -56,6 +58,8 @@ export default function EditSurveyPage() {
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [fieldsReordered, setFieldsReordered] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchSurvey = async () => {
@@ -81,6 +85,18 @@ export default function EditSurveyPage() {
         title,
         description: description || null,
       });
+
+      // If fields were reordered, save the new order
+      if (fieldsReordered && survey) {
+        const fieldOrders = survey.survey_fields.map((field, index) => ({
+          id: field.id,
+          order_index: index,
+        }));
+        await api.put(`/admin/surveys/${params.id}/fields/reorder`, {
+          fieldOrders,
+        });
+      }
+
       toast({
         title: "Survey Updated",
         description: "Your changes have been saved successfully.",
@@ -134,6 +150,52 @@ export default function EditSurveyPage() {
         });
       }
     }
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (!survey || draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const updated = { ...survey };
+    const fields = [...updated.survey_fields];
+    const [draggedField] = fields.splice(draggedIndex, 1);
+    fields.splice(dropIndex, 0, draggedField);
+    updated.survey_fields = fields;
+    setSurvey(updated);
+    setDraggedIndex(null);
+    setFieldsReordered(true);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  const moveFieldUp = (index: number) => {
+    if (!survey || index === 0) return;
+    const updated = { ...survey };
+    const fields = [...updated.survey_fields];
+    [fields[index - 1], fields[index]] = [fields[index], fields[index - 1]];
+    updated.survey_fields = fields;
+    setSurvey(updated);
+    setFieldsReordered(true);
+  };
+
+  const moveFieldDown = (index: number) => {
+    if (!survey || index === survey.survey_fields.length - 1) return;
+    const updated = { ...survey };
+    const fields = [...updated.survey_fields];
+    [fields[index], fields[index + 1]] = [fields[index + 1], fields[index]];
+    updated.survey_fields = fields;
+    setSurvey(updated);
+    setFieldsReordered(true);
   };
 
   if (loading) {
@@ -245,11 +307,18 @@ export default function EditSurveyPage() {
             {survey.survey_fields.map((field, index) => (
               <div
                 key={field.id}
-                className="bg-card border rounded-lg p-4 hover:shadow-md transition-shadow"
+                draggable
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`bg-card border rounded-lg p-4 hover:shadow-md transition-all ${
+                  draggedIndex === index ? "opacity-50 scale-95" : ""
+                }`}
               >
                 <div className="flex items-start gap-4">
                   <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                    <GripVertical className="h-5 w-5" />
+                    <GripVertical className="h-5 w-5 cursor-grab active:cursor-grabbing" />
                     <span className="text-sm font-medium">#{index + 1}</span>
                   </div>
 
@@ -267,14 +336,35 @@ export default function EditSurveyPage() {
                         </div>
                       </div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteField(field.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveFieldUp(index)}
+                          disabled={index === 0}
+                          title="Move up"
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveFieldDown(index)}
+                          disabled={index === survey.survey_fields.length - 1}
+                          title="Move down"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteField(field.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title="Delete field"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     {field.field_options.length > 0 && (

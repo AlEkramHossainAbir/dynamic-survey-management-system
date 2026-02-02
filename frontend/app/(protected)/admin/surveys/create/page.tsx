@@ -22,6 +22,8 @@ import {
   Save,
   ChevronLeft,
   X,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,6 +50,7 @@ export default function CreateSurveyPage() {
   const [fields, setFields] = useState<Field[]>([]);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const addField = () => {
     setFields([
@@ -64,6 +67,43 @@ export default function CreateSurveyPage() {
 
   const removeField = (index: number) => {
     setFields(fields.filter((_, i) => i !== index));
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const updated = [...fields];
+    const [draggedField] = updated.splice(draggedIndex, 1);
+    updated.splice(dropIndex, 0, draggedField);
+    setFields(updated);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  const moveFieldUp = (index: number) => {
+    if (index === 0) return;
+    const updated = [...fields];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    setFields(updated);
+  };
+
+  const moveFieldDown = (index: number) => {
+    if (index === fields.length - 1) return;
+    const updated = [...fields];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    setFields(updated);
   };
 
   const addOption = (fieldIndex: number) => {
@@ -291,23 +331,51 @@ export default function CreateSurveyPage() {
               {fields.map((field, index) => (
                 <div
                   key={index}
-                  className="bg-card border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`bg-card border rounded-lg shadow-sm hover:shadow-md transition-all ${
+                    draggedIndex === index ? "opacity-50 scale-95" : ""
+                  }`}
                 >
                   {/* Field Header */}
                   <div className="flex items-center gap-3 p-4 border-b bg-muted/30">
-                    <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                    <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab active:cursor-grabbing" />
                     <span className="text-sm font-semibold text-muted-foreground">
                       Field {index + 1}
                     </span>
                     <div className="flex-1" />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeField(index)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveFieldUp(index)}
+                        disabled={index === 0}
+                        title="Move up"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveFieldDown(index)}
+                        disabled={index === fields.length - 1}
+                        title="Move down"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeField(index)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Delete field"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Field Content */}
