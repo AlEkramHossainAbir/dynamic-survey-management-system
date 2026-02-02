@@ -75,7 +75,6 @@ The easiest way to run this project is using Docker. This will set up both the f
 ### Prerequisites
 - **Docker Desktop** installed and running
 - **Git**
-- A **Supabase account** (free tier works) for PostgreSQL database
 
 ### Setup Steps
 
@@ -94,9 +93,10 @@ cp .env.example .env
 Edit `backend/.env` and add your Supabase credentials (get from Supabase Dashboard → Project Settings → Database):
 
 ```env
-DATABASE_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[REGION].pooler.supabase.com:5432/postgres"
-JWT_SECRET="your-super-secret-jwt-key"
+DATABASE_URL="postgresql://postgres.ztpvdryylduxekxtyixm:EqlfMIEKtm9NbAfr@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.ztpvdryylduxekxtyixm:EqlfMIEKtm9NbAfr@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
+JWT_SECRET="SuperSecretKey12345"
+
 ```
 
 3. **Start the application:**
