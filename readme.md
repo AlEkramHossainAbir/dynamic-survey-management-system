@@ -88,18 +88,9 @@ cd dynamic-survey-management-system
 ```bash
 cd backend
 cp .env.example .env
-```
 
-Edit `backend/.env` and add your Supabase credentials (get from Supabase Dashboard → Project Settings → Database):
 
-```env
-DATABASE_URL="postgresql://postgres.ztpvdryylduxekxtyixm:EqlfMIEKtm9NbAfr@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.ztpvdryylduxekxtyixm:EqlfMIEKtm9NbAfr@aws-1-ap-south-1.pooler.supabase.com:5432/postgres"
-JWT_SECRET="SuperSecretKey12345"
-
-```
-
-3. **Start the application:**
+1. **Start the application:**
 ```bash
 # Return to project root
 cd ..
@@ -136,7 +127,6 @@ If you prefer to run without Docker, follow these steps:
 Before you begin, make sure you have the following installed:
 - **Node.js** (version 18 or higher)
 - **npm** (comes with Node.js)
-- **PostgreSQL database** (we use Supabase - a cloud-hosted PostgreSQL service)
 - **Git**
 
 ### Step 1: Clone the Repository
@@ -197,10 +187,10 @@ cd frontend
 npm install
 ```
 
-3. Create environment file:
+3. Create environment file (optional):
 ```bash
 # Copy the example file
-cp .env.example .env.local
+cp .env.example .env
 
 # The .env.local file should contain:
 # NEXT_PUBLIC_API_URL=http://localhost:5000/api
