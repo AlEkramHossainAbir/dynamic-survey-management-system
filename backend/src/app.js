@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const showAllUsers = require('./routes/userRoute');
 const surveyRoutes = require('./routes/surveyRoutes');
 const surveySubmissionRoutes = require('./routes/surveySubmission');
+const { swaggerUi, specs } = require('./config/swagger');
 
 
 
@@ -15,6 +16,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Survey API Documentation',
+}));
 
 // Health check route
 app.use("/api/auth", authRoutes);
