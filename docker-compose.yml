@@ -32,7 +32,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_API_URL=http://localhost:5000/api
     volumes:
       - ./frontend/app:/app/app
       - ./frontend/components:/app/components

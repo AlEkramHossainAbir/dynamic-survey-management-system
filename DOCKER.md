@@ -99,7 +99,8 @@ PORT=5000
 NODE_ENV=production
 
 # Frontend (optional, has defaults)
-NEXT_PUBLIC_API_URL=https://your-api-domain.com
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
 ```
 
 ### Stop production services
