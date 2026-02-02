@@ -8,7 +8,8 @@ A full-stack web application that allows administrators to create and manage sur
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [Project Setup](#-project-setup)
+- [Quick Start with Docker](#-quick-start-with-docker-recommended)
+- [Project Setup (Manual)](#-project-setup-manual)
 - [Database Design](#-database-design)
 - [Backend Architecture](#-backend-architecture)
 - [API Design](#-api-design)
@@ -67,7 +68,69 @@ A full-stack web application that allows administrators to create and manage sur
 
 ---
 
-## 🚀 Project Setup
+## � Quick Start with Docker (Recommended)
+
+The easiest way to run this project is using Docker. This will set up both the frontend and backend with a single command.
+
+### Prerequisites
+- **Docker Desktop** installed and running
+- **Git**
+- A **Supabase account** (free tier works) for PostgreSQL database
+
+### Setup Steps
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/AlEkramHossainAbir/dynamic-survey-management-system
+cd dynamic-survey-management-system
+```
+
+2. **Configure backend environment variables:**
+```bash
+cd backend
+cp .env.example .env
+```
+
+Edit `backend/.env` and add your Supabase credentials (get from Supabase Dashboard → Project Settings → Database):
+
+```env
+DATABASE_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@[REGION].pooler.supabase.com:5432/postgres"
+JWT_SECRET="your-super-secret-jwt-key"
+```
+
+3. **Start the application:**
+```bash
+# Return to project root
+cd ..
+
+# Start all services with Docker
+docker-compose up --build
+```
+
+4. **Access the application:**
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:5000
+- **API Documentation:** http://localhost:5000/api-docs
+
+5. **Stop the application:**
+```bash
+docker-compose down
+```
+
+**Default Login Credentials:**
+- Admin: `admin@example.com` / `admin`
+- Officer: `officer@example.com` / `officer`
+
+**Note:** Frontend environment variables are optional and have defaults. The frontend will automatically connect to `http://localhost:5000` when running via Docker.
+
+For detailed Docker commands, troubleshooting, and production deployment, see [DOCKER.md](DOCKER.md)
+
+---
+
+## 🚀 Project Setup (Manual)
+
+If you prefer to run without Docker, follow these steps:
 
 ### Prerequisites
 Before you begin, make sure you have the following installed:
