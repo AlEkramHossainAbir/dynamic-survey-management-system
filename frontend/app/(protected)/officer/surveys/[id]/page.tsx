@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, AlertCircle, CheckCircle2, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
 
 interface FieldOption {
   id: number;
@@ -79,7 +80,11 @@ export default function SurveySubmissionPage() {
     }
   };
 
-  const handleCheckboxChange = (fieldId: number, optionValue: string, checked: boolean) => {
+  const handleCheckboxChange = (
+    fieldId: number,
+    optionValue: string,
+    checked: boolean,
+  ) => {
     const currentValues = (answers[fieldId] as string[]) || [];
     const newValues = checked
       ? [...currentValues, optionValue]
@@ -89,11 +94,15 @@ export default function SurveySubmissionPage() {
 
   const validateForm = (): boolean => {
     const newErrors: Record<number, string> = {};
-    
+
     survey?.survey_fields.forEach((field) => {
       if (field.is_required) {
         const answer = answers[field.id];
-        if (!answer || (Array.isArray(answer) && answer.length === 0) || answer === "") {
+        if (
+          !answer ||
+          (Array.isArray(answer) && answer.length === 0) ||
+          answer === ""
+        ) {
           newErrors[field.id] = "This field is required";
         }
       }
@@ -118,16 +127,22 @@ export default function SurveySubmissionPage() {
         value: Array.isArray(value) ? value.join(", ") : value,
       }));
 
-      await api.post(`/officer/surveys/${params.id}/submit`, { answers: payload });
+      await api.post(`/officer/surveys/${params.id}/submit`, {
+        answers: payload,
+      });
       setSubmitSuccess(true);
-      
+
       // Redirect after 2 seconds
       setTimeout(() => {
         router.push("/officer/surveys");
       }, 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setSubmitError(err.response?.data?.message || "Failed to submit survey. Please try again.");
+      if (axios.isAxiosError(err)) {
+        setSubmitError(err.response?.data?.message);
+      } else {
+        setSubmitError("Failed to submit survey. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -151,7 +166,9 @@ export default function SurveySubmissionPage() {
           <AlertCircle className="h-12 w-12 mx-auto text-red-500" />
           <p className="text-red-500">Survey not found</p>
           <Link href="/officer/surveys">
-            <Button variant="outline" className="cursor-pointer">Back to Surveys</Button>
+            <Button variant="outline" className="cursor-pointer">
+              Back to Surveys
+            </Button>
           </Link>
         </div>
       </div>
@@ -168,7 +185,8 @@ export default function SurveySubmissionPage() {
           <div className="space-y-2">
             <h2 className="text-2xl font-bold">Survey Submitted!</h2>
             <p className="text-muted-foreground">
-              Thank you for completing the survey. Your response has been recorded.
+              Thank you for completing the survey. Your response has been
+              recorded.
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -190,9 +208,11 @@ export default function SurveySubmissionPage() {
               Back to Surveys
             </Button>
           </Link>
-          
+
           <div className="bg-card rounded-lg border p-6 shadow-sm">
-            <h1 className="text-3xl font-bold tracking-tight">{survey.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {survey.title}
+            </h1>
             {survey.description && (
               <p className="text-muted-foreground mt-2">{survey.description}</p>
             )}
@@ -202,7 +222,8 @@ export default function SurveySubmissionPage() {
               </span>
               <span>•</span>
               <span>
-                {survey.survey_fields.filter((f) => f.is_required).length} required
+                {survey.survey_fields.filter((f) => f.is_required).length}{" "}
+                required
               </span>
             </div>
           </div>
@@ -227,10 +248,17 @@ export default function SurveySubmissionPage() {
               className="bg-card rounded-lg border p-6 shadow-sm space-y-3 transition-all hover:shadow-md"
             >
               <div className="flex items-start justify-between">
-                <Label htmlFor={`field-${field.id}`} className="text-base font-semibold">
-                  <span className="text-muted-foreground mr-2">Q{index + 1}.</span>
+                <Label
+                  htmlFor={`field-${field.id}`}
+                  className="text-base font-semibold"
+                >
+                  <span className="text-muted-foreground mr-2">
+                    Q{index + 1}.
+                  </span>
                   {field.label}
-                  {field.is_required && <span className="text-red-500 ml-1">*</span>}
+                  {field.is_required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
                 </Label>
               </div>
 
@@ -261,12 +289,23 @@ export default function SurveySubmissionPage() {
               {field.field_type === "checkbox" && (
                 <div className="space-y-3">
                   {field.field_options.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-3">
+                    <div
+                      key={option.id}
+                      className="flex items-center space-x-3"
+                    >
                       <Checkbox
                         id={`option-${option.id}`}
-                        checked={(answers[field.id] as string[])?.includes(option.value) || false}
+                        checked={
+                          (answers[field.id] as string[])?.includes(
+                            option.value,
+                          ) || false
+                        }
                         onCheckedChange={(checked) =>
-                          handleCheckboxChange(field.id, option.value, checked as boolean)
+                          handleCheckboxChange(
+                            field.id,
+                            option.value,
+                            checked as boolean,
+                          )
                         }
                       />
                       <Label
@@ -288,8 +327,14 @@ export default function SurveySubmissionPage() {
                   className="space-y-3"
                 >
                   {field.field_options.map((option) => (
-                    <div key={option.id} className="flex items-center space-x-3">
-                      <RadioGroupItem value={option.value} id={`option-${option.id}`} />
+                    <div
+                      key={option.id}
+                      className="flex items-center space-x-3"
+                    >
+                      <RadioGroupItem
+                        value={option.value}
+                        id={`option-${option.id}`}
+                      />
                       <Label
                         htmlFor={`option-${option.id}`}
                         className="font-normal cursor-pointer"
@@ -307,7 +352,9 @@ export default function SurveySubmissionPage() {
                   value={(answers[field.id] as string) || ""}
                   onValueChange={(value) => handleInputChange(field.id, value)}
                 >
-                  <SelectTrigger className={errors[field.id] ? "border-red-500" : ""}>
+                  <SelectTrigger
+                    className={errors[field.id] ? "border-red-500" : ""}
+                  >
                     <SelectValue placeholder="Select an option" />
                   </SelectTrigger>
                   <SelectContent>

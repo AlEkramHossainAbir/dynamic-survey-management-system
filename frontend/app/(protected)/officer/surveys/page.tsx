@@ -16,6 +16,8 @@ interface Survey {
 
 export default function OfficerSurveys() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,9 +25,10 @@ export default function OfficerSurveys() {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get(`/officer/surveys`);
+      const res = await api.get(`/officer/surveys?page=${page}&limit=9`);
       setSurveys(res.data.data);
-    } catch (err: any) {
+      setTotalPages(res.data.meta?.totalPages || 1);
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to load surveys. Please try again.");
     } finally {
@@ -35,7 +38,8 @@ export default function OfficerSurveys() {
 
   useEffect(() => {
     fetchSurveys();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   if (loading) {
     return (
@@ -124,6 +128,33 @@ export default function OfficerSurveys() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="cursor-pointer"
+          >
+            Previous
+          </Button>
+          <div className="flex items-center gap-2 px-4">
+            <span className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="cursor-pointer"
+          >
+            Next
+          </Button>
         </div>
       )}
     </div>

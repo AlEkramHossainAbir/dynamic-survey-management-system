@@ -44,7 +44,7 @@ export default function SurveyListPage() {
   const loadSurveys = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/admin/surveys?page=${page}&limit=12`);
+      const res = await api.get(`/admin/surveys?page=${page}&limit=9`);
       setSurveys(res.data.data);
       setTotalPages(res.data.meta.totalPages);
     } catch (err) {
@@ -56,6 +56,7 @@ export default function SurveyListPage() {
 
   useEffect(() => {
     loadSurveys();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const confirmDelete = async () => {
@@ -215,6 +216,7 @@ export default function SurveyListPage() {
           )}
         </>
       )}
+      
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

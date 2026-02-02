@@ -2,17 +2,35 @@ const prisma = require('../config/db');
 
 // GET /surveys
 const getOfficerSurveys = async (req, res) => {
-    console.log("Fetching surveys for officer:");
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
-    const surveys = await prisma.surveys.findMany({
-      include: {
-        survey_fields: {
-          include: { field_options: true }
-        }
-      }
+    const [surveys, total] = await Promise.all([
+      prisma.surveys.findMany({
+        skip,
+        take: limit,
+        include: {
+          survey_fields: {
+            include: { field_options: true }
+          }
+        },
+        orderBy: { created_at: "desc" }
+      }),
+      prisma.surveys.count()
+    ]);
+
+    res.json({
+      success: true,
+      data: surveys,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     });
-    console.log(surveys);
-    res.json({ success: true, data: surveys });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Failed to fetch surveys" });
