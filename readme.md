@@ -521,6 +521,89 @@ All components are built with **shadcn/ui** and **Radix UI**:
 
 ---
 
+## 🎨 User Interface Overview
+
+### Admin Dashboard - Survey Management
+
+#### Survey List Page
+The main survey management page displays all surveys in a **3-column responsive grid** layout. Each survey is presented in a card with:
+
+**Card Header:**
+- Survey icon in a colored badge
+- Survey title (truncated to 2 lines if too long)
+- Survey description (truncated to 2 lines if provided)
+- Creation date with calendar icon
+
+**Four Action Buttons at the bottom of each card:**
+
+1. **View Button** (Eye icon) 
+   - Opens the survey details page
+   - Shows all fields configured for the survey
+   - Allows adding more fields to the survey
+   - Displays "Edit" and "Submissions" buttons for quick access
+
+2. **Edit Button** (Pencil icon)
+   - Opens the survey editor
+   - Allows modifying survey title and description
+   - Save changes with validation
+
+3. **Submissions Button** (Bar Chart icon)
+   - Opens the submissions page
+   - Displays a data table with all responses
+   - Shows officer names, submission dates, and all answers
+   - Export to CSV functionality for data analysis
+
+4. **Delete Button** (Trash icon, red color)
+   - Opens a confirmation dialog
+   - Warns that deletion is permanent
+   - Deletes survey and all associated responses on confirmation
+
+**Additional UI Elements:**
+- "Create Survey" button in the header (green, with Plus icon)
+- Pagination controls if more than 9 surveys exist
+- Empty state with helpful message when no surveys exist
+
+#### Create Survey Page
+Dynamic form builder with:
+- Title and description inputs at the top
+- "Add Field" button to create new form fields
+- Each field card shows:
+  - Field number and drag handle for reordering
+  - Up/Down arrows to move fields
+  - Delete button (red)
+  - Field label input (required)
+  - Field type dropdown (text, textarea, checkbox, radio, select)
+  - "Required field" checkbox
+  - Options section (for checkbox, radio, select types)
+- Sticky "Save Survey" button at the bottom
+- Real-time validation with error messages
+
+### Officer Dashboard - Survey Submission
+
+#### Available Surveys Page
+Officers see a clean grid of available surveys with:
+
+**Each Survey Card:**
+- Survey icon and title
+- Description (if provided)
+- Creation date
+- Field count indicator
+- Hover effect with subtle animation
+- Click anywhere on the card to open
+
+**Card is fully clickable** - no separate buttons needed, the entire card acts as a link to the survey form.
+
+#### Survey Submission Form
+Clean, focused form with:
+- Survey title and description at the top
+- All fields rendered based on their type
+- Required field indicators (red asterisk)
+- Submit button at the bottom
+- Back button to return to survey list
+- Success toast notification on submission
+
+---
+
 ## 🎯 Design Decisions
 
 ### Why Supabase PostgreSQL?
