@@ -31,8 +31,9 @@ services:
     container_name: survey-frontend-prod
     ports:
       - "3000:3000"
-    env_file:
-      - ./frontend/.env.local
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
     networks:
       - survey-network
     depends_on:

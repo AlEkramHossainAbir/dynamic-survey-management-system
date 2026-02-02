@@ -681,10 +681,10 @@ This is an assessment project.
 - [ ] Clone the repository
 - [ ] Install backend dependencies (`cd backend && npm install`)
 - [ ] Setup backend `.env` file with database credentials
-- [ ] Run `npx prisma db pull` and `npx prisma generate`
+- [ ] Run `npx prisma generate`
 - [ ] Start backend (`npm run dev`)
 - [ ] Install frontend dependencies (`cd frontend && npm install`)
-- [ ] Setup frontend `.env.local` file
+- [ ] Setup frontend `.env` file
 - [ ] Start frontend (`npm run dev`)
 - [ ] Visit http://localhost:3000 and login
 - [ ] Check API docs at http://localhost:5000/api-docs
