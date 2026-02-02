@@ -6,7 +6,7 @@ const { submitSurveySchema } = require("../validators/surveyValidators");
 const { submitSurvey, getOfficerSurveys, getOfficerSurveyById } = require('../controllers/surveySubmissionController');
 
 
-router.get('/', authenticateJWT, getOfficerSurveys);
-router.get('/:id', authenticateJWT, getOfficerSurveyById);
+router.get('/', authenticateJWT, authorizeRole(['officer']), getOfficerSurveys);
+router.get('/:id', authenticateJWT, authorizeRole(['officer']), getOfficerSurveyById);
 router.post('/:id/submit', authenticateJWT, authorizeRole(['officer']), validate(submitSurveySchema), submitSurvey);
 module.exports = router;

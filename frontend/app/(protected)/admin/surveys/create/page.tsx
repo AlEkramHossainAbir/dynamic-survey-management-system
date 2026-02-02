@@ -214,7 +214,7 @@ export default function CreateSurveyPage() {
         {/* Header */}
         <div className="space-y-4">
           <Link href="/admin/surveys">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
               <ChevronLeft className="h-4 w-4" />
               Back to Surveys
             </Button>
@@ -231,7 +231,7 @@ export default function CreateSurveyPage() {
               onClick={handleSave}
               disabled={saving || !title || fields.length === 0}
               size="lg"
-              className="gap-2"
+              className="gap-2 cursor-pointer"
             >
               {saving ? (
                 <>
@@ -304,7 +304,7 @@ export default function CreateSurveyPage() {
                 Add questions and fields to collect responses
               </p>
             </div>
-            <Button onClick={addField} variant="outline" className="gap-2">
+            <Button onClick={addField} variant="outline" className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               Add Field
             </Button>
@@ -321,7 +321,7 @@ export default function CreateSurveyPage() {
                   Click &quot;Add Field&quot; to start building your survey
                 </p>
               </div>
-              <Button onClick={addField} variant="outline" className="gap-2 mt-4">
+              <Button onClick={addField} variant="outline" className="gap-2 mt-4 cursor-pointer">
                 <Plus className="h-4 w-4" />
                 Add Your First Field
               </Button>
@@ -354,6 +354,7 @@ export default function CreateSurveyPage() {
                         onClick={() => moveFieldUp(index)}
                         disabled={index === 0}
                         title="Move up"
+                        className="cursor-pointer"
                       >
                         <ChevronUp className="h-4 w-4" />
                       </Button>
@@ -363,14 +364,15 @@ export default function CreateSurveyPage() {
                         onClick={() => moveFieldDown(index)}
                         disabled={index === fields.length - 1}
                         title="Move down"
-                      >
+                        className="cursor-pointer"
+                        >
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => removeField(index)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                         title="Delete field"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -462,7 +464,7 @@ export default function CreateSurveyPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => addOption(index)}
-                            className="gap-1.5 h-8"
+                            className="gap-1.5 h-8 cursor-pointer"
                           >
                             <Plus className="h-3.5 w-3.5" />
                             Add Option
@@ -490,7 +492,7 @@ export default function CreateSurveyPage() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => removeOption(index, optIndex)}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -523,14 +525,14 @@ export default function CreateSurveyPage() {
               </div>
               <div className="flex gap-2">
                 <Link href="/admin/surveys">
-                  <Button variant="outline" disabled={saving}>
+                  <Button variant="outline" disabled={saving} className="cursor-pointer">
                     Cancel
                   </Button>
                 </Link>
                 <Button
                   onClick={handleSave}
                   disabled={saving || !title || fields.length === 0}
-                  className="gap-2 min-w-[140px]"
+                  className="gap-2 min-w-[140px] cursor-pointer"
                 >
                   {saving ? (
                     <>

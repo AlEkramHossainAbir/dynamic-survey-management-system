@@ -94,7 +94,7 @@ export default function SurveyListPage() {
           </p>
         </div>
         <Link href="/admin/surveys/create">
-          <Button size="lg" className="gap-2">
+          <Button size="lg" className="gap-2 cursor-pointer">
             <Plus className="h-5 w-5" />
             Create Survey
           </Button>
@@ -115,7 +115,7 @@ export default function SurveyListPage() {
             </p>
           </div>
           <Link href="/admin/surveys/create">
-            <Button size="lg" className="gap-2 mt-4">
+            <Button size="lg" className="gap-2 mt-4 cursor-pointer">
               <Plus className="h-5 w-5" />
               Create Your First Survey
             </Button>
@@ -158,19 +158,19 @@ export default function SurveyListPage() {
                 {/* Card Actions */}
                 <div className="px-6 pb-6 flex gap-2">
                   <Link href={`/admin/surveys/${survey.id}`} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full gap-2">
+                    <Button variant="outline" size="sm" className="w-full gap-2 cursor-pointer">
                       <Eye className="h-4 w-4" />
                       View
                     </Button>
                   </Link>
                   <Link href={`/admin/surveys/${survey.id}/edit`}>
-                    <Button variant="outline" size="sm" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2 cursor-pointer">
                       <Edit className="h-4 w-4" />
                       Edit
                     </Button>
                   </Link>
                   <Link href={`/admin/surveys/${survey.id}/submissions`}>
-                    <Button variant="outline" size="sm" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2 cursor-pointer">
                       <BarChart3 className="h-4 w-4" />
                     </Button>
                   </Link>
@@ -178,7 +178,7 @@ export default function SurveyListPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setDeleteId(survey.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -194,6 +194,7 @@ export default function SurveyListPage() {
                 variant="outline"
                 disabled={page === 1}
                 onClick={() => setPage((p) => p - 1)}
+                className="cursor-pointer"
               >
                 Previous
               </Button>
@@ -206,6 +207,7 @@ export default function SurveyListPage() {
                 variant="outline"
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => p + 1)}
+                className="cursor-pointer"
               >
                 Next
               </Button>

@@ -80,6 +80,7 @@ export default function FieldCard({ field, onDelete, surveyId }: any) {
                 options: [...data.options, { label: "", value: "" }],
               })
             }
+            className="cursor-pointer"
           >
             + Add Option
           </Button>
@@ -87,8 +88,8 @@ export default function FieldCard({ field, onDelete, surveyId }: any) {
       )}
 
       <div className="flex gap-2">
-        <Button onClick={saveField}>Save Field</Button>
-        <Button variant="destructive" onClick={onDelete}>
+        <Button onClick={saveField} className="cursor-pointer">Save Field</Button>
+        <Button variant="destructive" onClick={onDelete} className="cursor-pointer">
           Remove
         </Button>
       </div>

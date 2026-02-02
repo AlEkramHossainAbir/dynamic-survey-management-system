@@ -215,7 +215,7 @@ export default function EditSurveyPage() {
         <div className="text-center space-y-3">
           <p className="text-red-500">Survey not found</p>
           <Link href="/admin/surveys">
-            <Button variant="outline">Back to Surveys</Button>
+            <Button variant="outline" className="cursor-pointer">Back to Surveys</Button>
           </Link>
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function EditSurveyPage() {
       {/* Header */}
       <div className="space-y-4">
         <Link href="/admin/surveys">
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys
           </Button>
@@ -235,7 +235,7 @@ export default function EditSurveyPage() {
 
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">Edit Survey</h1>
-          <Button onClick={handleSave} disabled={saving || !title} className="gap-2">
+          <Button onClick={handleSave} disabled={saving || !title} className="gap-2 cursor-pointer">
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -285,7 +285,7 @@ export default function EditSurveyPage() {
             </p>
           </div>
           <Link href={`/admin/surveys/${params.id}`}>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               Add Field
             </Button>
@@ -296,7 +296,7 @@ export default function EditSurveyPage() {
           <div className="bg-card border rounded-lg p-12 text-center space-y-3">
             <p className="text-muted-foreground">No fields added yet</p>
             <Link href={`/admin/surveys/${params.id}`}>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 cursor-pointer">
                 <Plus className="h-4 w-4" />
                 Add Your First Field
               </Button>
@@ -343,6 +343,7 @@ export default function EditSurveyPage() {
                           onClick={() => moveFieldUp(index)}
                           disabled={index === 0}
                           title="Move up"
+                          className="cursor-pointer"
                         >
                           <ChevronUp className="h-4 w-4" />
                         </Button>
@@ -352,6 +353,7 @@ export default function EditSurveyPage() {
                           onClick={() => moveFieldDown(index)}
                           disabled={index === survey.survey_fields.length - 1}
                           title="Move down"
+                          className="cursor-pointer"
                         >
                           <ChevronDown className="h-4 w-4" />
                         </Button>
@@ -359,7 +361,7 @@ export default function EditSurveyPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDeleteField(field.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                           title="Delete field"
                         >
                           <Trash2 className="h-4 w-4" />

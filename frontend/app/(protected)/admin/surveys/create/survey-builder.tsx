@@ -29,6 +29,7 @@ export default function SurveyBuilder({ surveyId }: { surveyId: number }) {
             { label: "", field_type: "text", is_required: false, options: [] },
           ])
         }
+        className="cursor-pointer"
       >
         + Add Field
       </Button>

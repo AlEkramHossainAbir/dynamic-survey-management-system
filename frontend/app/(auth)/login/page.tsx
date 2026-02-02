@@ -66,7 +66,7 @@ export default function LoginPage() {
         <div className="flex gap-2 mb-4">
           <Button
             variant="outline"
-            className="w-auto"
+            className="w-auto cursor-pointer"
             onClick={fillAdmin}
             type="button"
           >
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
           <Button
             variant="outline"
-            className="w-auto"
+            className="w-auto cursor-pointer"
             onClick={fillOfficer}
             type="button"
           >
@@ -97,7 +97,7 @@ export default function LoginPage() {
           className="mb-4"
           onKeyDown={(e) => e.key === "Enter" && handleLogin()}
         />
-        <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
+        <Button onClick={handleLogin} className="w-full cursor-pointer" disabled={isLoading}>
           {isLoading ? "Logging in..." : "Login"}
         </Button>
       </div>

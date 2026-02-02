@@ -160,7 +160,7 @@ export default function SurveyDetailPage() {
       {/* Header */}
       <div className="space-y-4">
         <Link href="/admin/surveys">
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys
           </Button>
@@ -175,13 +175,13 @@ export default function SurveyDetailPage() {
           </div>
           <div className="flex gap-2">
             <Link href={`/admin/surveys/${params.id}/edit`}>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 cursor-pointer">
                 <Edit className="h-4 w-4" />
                 Edit
               </Button>
             </Link>
             <Link href={`/admin/surveys/${params.id}/submissions`}>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2 cursor-pointer">
                 <BarChart3 className="h-4 w-4" />
                 Submissions
               </Button>
@@ -276,7 +276,7 @@ export default function SurveyDetailPage() {
           <h2 className="text-xl font-semibold">
             {survey.survey_fields.length > 0 ? "Add More Fields" : "Add Fields"}
           </h2>
-          <Button onClick={addField} variant="outline" className="gap-2">
+          <Button onClick={addField} variant="outline" className="gap-2 cursor-pointer">
             <Plus className="h-4 w-4" />
             Add Field
           </Button>
@@ -298,7 +298,7 @@ export default function SurveyDetailPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => removeField(index)}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-600 hover:text-red-700 cursor-pointer"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -360,7 +360,7 @@ export default function SurveyDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => addOption(index)}
-                    className="gap-2"
+                    className="gap-2 cursor-pointer"
                   >
                     <Plus className="h-3 w-3" />
                     Add Option
@@ -379,7 +379,7 @@ export default function SurveyDetailPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeOption(index, optIndex)}
-                      className="text-red-600"
+                      className="text-red-600 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -396,10 +396,11 @@ export default function SurveyDetailPage() {
               variant="outline"
               onClick={() => setNewFields([])}
               disabled={saving}
+              className="cursor-pointer"
             >
               Cancel
             </Button>
-            <Button onClick={saveFields} disabled={saving} className="gap-2">
+            <Button onClick={saveFields} disabled={saving} className="gap-2 cursor-pointer">
               {saving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />

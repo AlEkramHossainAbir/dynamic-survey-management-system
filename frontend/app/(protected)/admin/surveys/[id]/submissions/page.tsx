@@ -138,7 +138,7 @@ export default function SubmissionsPage() {
         <div className="text-center space-y-3">
           <p className="text-red-500">{error || "Survey not found"}</p>
           <Link href="/admin/surveys">
-            <Button variant="outline">Back to Surveys</Button>
+            <Button variant="outline" className="cursor-pointer">Back to Surveys</Button>
           </Link>
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function SubmissionsPage() {
       {/* Header */}
       <div className="space-y-4">
         <Link href="/admin/surveys">
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
             <ChevronLeft className="h-4 w-4" />
             Back to Surveys
           </Button>
@@ -164,7 +164,7 @@ export default function SubmissionsPage() {
             )}
           </div>
           {submissions.length > 0 && (
-            <Button onClick={exportToCSV} variant="outline" className="gap-2">
+            <Button onClick={exportToCSV} variant="outline" className="gap-2 cursor-pointer">
               <Download className="h-4 w-4" />
               Export CSV
             </Button>
@@ -273,6 +273,7 @@ export default function SubmissionsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
+                  className="cursor-pointer"
                 >
                   Previous
                 </Button>
@@ -284,6 +285,7 @@ export default function SubmissionsPage() {
                   size="sm"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
+                  className="cursor-pointer"
                 >
                   Next
                 </Button>

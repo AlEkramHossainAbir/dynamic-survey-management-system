@@ -151,7 +151,7 @@ export default function SurveySubmissionPage() {
           <AlertCircle className="h-12 w-12 mx-auto text-red-500" />
           <p className="text-red-500">Survey not found</p>
           <Link href="/officer/surveys">
-            <Button variant="outline">Back to Surveys</Button>
+            <Button variant="outline" className="cursor-pointer">Back to Surveys</Button>
           </Link>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function SurveySubmissionPage() {
         {/* Header */}
         <div className="space-y-4">
           <Link href="/officer/surveys">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
               <ChevronLeft className="h-4 w-4" />
               Back to Surveys
             </Button>
@@ -341,7 +341,7 @@ export default function SurveySubmissionPage() {
               onClick={handleSubmit}
               disabled={submitting}
               size="lg"
-              className="min-w-[140px]"
+              className="min-w-[140px] cursor-pointer"
             >
               {submitting ? (
                 <>

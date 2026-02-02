@@ -53,7 +53,7 @@ export default function OfficerSurveys() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
           <p className="text-red-500">{error}</p>
-          <Button onClick={fetchSurveys} variant="outline">
+          <Button onClick={fetchSurveys} variant="outline" className="cursor-pointer">
             Try Again
           </Button>
         </div>
