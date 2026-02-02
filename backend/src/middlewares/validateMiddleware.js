@@ -6,11 +6,11 @@ const validate = (schema) => {
       req.body = validated; // Replace body with validated data
       next();
     } catch (err) {
-      if (err.errors) {
+      if (err.issues) {
         // Zod validation error
         return res.status(400).json({
           message: "Validation failed",
-          errors: err.errors.map((e) => ({
+          errors: err.issues.map((e) => ({
             path: e.path.join("."),
             message: e.message,
           })),
